@@ -33,7 +33,7 @@ describe('Teams Test', function () {
   it('should return not found if the team doesn\'t exists', async function() {
     sinon.stub(SequelizeTeam,'findOne').resolves(null)
 
-    const {status,body} = await chai.request(app).get('/teams/999')
+    const {body} = await chai.request(app).get('/teams/999')
     expect(body.message).to.be.equal('Team not found')
   })
 
