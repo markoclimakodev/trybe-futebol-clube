@@ -1,8 +1,8 @@
 import * as jwt from 'jsonwebtoken';
-import TokenPayload from '../Interfaces/User/TokenPayload';
+import ILogin from '../Interfaces/User/ILogin';
 
-export default function tokenGenerate(payLoad:TokenPayload):string {
+export default function tokenGenerate(payLoad:ILogin):string {
   const secret = process.env.JWT_SECRET || 'jwt_secret';
-  const token = jwt.sign(payLoad, secret, { algorithm: 'HS256', expiresIn: '1d' });
+  const token = jwt.sign(payLoad, secret, { expiresIn: '1h' });
   return token;
 }
