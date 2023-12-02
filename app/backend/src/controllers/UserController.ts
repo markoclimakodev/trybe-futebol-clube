@@ -15,4 +15,14 @@ export default class UserController {
 
     res.status(200).json({ token: serviceRespose.data });
   }
+
+  public async findRole(req:Request, res:Response) {
+    const login = req.body;
+    const serviceRespose = await this.userSerive.findRole(login);
+    if (serviceRespose.status !== 'success') {
+      return res.status(mapStatusHTTP(serviceRespose.status)).json(serviceRespose.data);
+    }
+
+    res.status(200).json(serviceRespose.data);
+  }
 }
