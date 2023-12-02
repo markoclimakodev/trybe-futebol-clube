@@ -1,8 +1,8 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import db from '.';
-import IMatches from '../../Interfaces/IMatches';
 
-class Matches extends Model<IMatches> {
+class SequelizeMatches extends Model<InferAttributes<SequelizeMatches>,
+InferCreationAttributes<SequelizeMatches>> {
   declare id: number;
   declare homeTeamId: number;
   declare homeTeamGoals: string;
@@ -11,7 +11,7 @@ class Matches extends Model<IMatches> {
   declare inProgress: boolean;
 }
 
-Matches.init(
+SequelizeMatches.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -50,10 +50,9 @@ Matches.init(
   },
   {
     sequelize: db,
-    modelName: 'Matches',
-    tableName: 'matches',
+    modelName: 'matches',
     timestamps: false,
   },
 );
 
-export default Matches;
+export default SequelizeMatches;

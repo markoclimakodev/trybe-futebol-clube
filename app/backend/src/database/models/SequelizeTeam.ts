@@ -1,12 +1,13 @@
-import { INTEGER, Model, STRING } from 'sequelize';
+import { INTEGER, InferAttributes, InferCreationAttributes, Model, STRING } from 'sequelize';
 import db from '.';
 
-class Teams extends Model {
+class SequelizeTeam extends Model<InferAttributes<SequelizeTeam>,
+InferCreationAttributes<SequelizeTeam>> {
   declare id: number;
   declare teamName: string;
 }
 
-Teams.init(
+SequelizeTeam.init(
   {
     id: {
       type: INTEGER,
@@ -22,10 +23,9 @@ Teams.init(
   },
   {
     sequelize: db,
-    modelName: 'Teams',
-    tableName: 'teams',
+    modelName: 'teams',
     timestamps: false,
   },
 );
 
-export default Teams;
+export default SequelizeTeam;

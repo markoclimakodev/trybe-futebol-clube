@@ -1,72 +1,42 @@
 import * as chai from 'chai';
-import { afterEach, before, beforeEach } from 'mocha';
+import { afterEach } from 'mocha';
 import * as sinon from 'sinon';
 import { app } from '../app';
+import SequelizeTeam from '../database/models/SequelizeTeam';
+import { teams } from './mocks/teamsMock';
 // @ts-ignore
 import chaiHttp = require('chai-http');
-
-import { Response } from 'superagent';
-import Teams from '../database/models/Teams';
-import { getTeamsMock } from './mocks/teamsMock';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('GET /teams', () => {
-  let res: Response;
 
-  before(async () => {
-    sinon.stub(Teams, 'findAll').resolves(getTeamsMock as Teams[])
-    res = await chai.request(app).get('/teams')
+describe('Teams Test', function () {
+
+  it('should return all teams', async function() {
+    sinon.stub(SequelizeTeam,'findAll').resolves(teams as any)
+
+    const {status,body} = await chai.request(app).get('/teams')
+    expect(status).to.be.equal(200);
+    expect(body).to.deep.equal(teams);
   })
 
-  afterEach(() => {
-    sinon.restore()
+  it('should return a team by id', async function() {
+    sinon.stub(SequelizeTeam,'findOne').resolves(teams[0] as any)
+
+    const {status,body} = await chai.request(app).get('/teams/1')
+    expect(status).to.be.equal(200);
+    expect(body).to.deep.equal(teams[0]);
   })
 
-  it('should return status 200 and all teams', async () => {
-    expect(res.status).to.be.equal(200)
-    expect(res.body).to.be.deep.equal(getTeamsMock);
+  it('should return not found if the team doesn\'t exists', async function() {
+    sinon.stub(SequelizeTeam,'findOne').resolves(null)
+
+    const {status,body} = await chai.request(app).get('/teams/999')
+    expect(body.message).to.be.equal('Team not found')
   })
+
+  afterEach(sinon.restore);
 
 })
-
-describe('GET /teams/:id', () => {
-  let res: Response;
-
-  afterEach(() => {
-    sinon.restore()
-  })
-
-  beforeEach(async () => {
-    sinon.stub(Teams, 'findByPk').resolves(getTeamsMock[4] as Teams)
-    res = await chai.request(app).get('/teams/5')
-  })
-
-  it('should return status 200 and the team by ID', async () => {
-    expect(res.status).to.be.equal(200)
-    expect(res.body).to.be.deep.equal(getTeamsMock[4])
-  })
-
-})
-
-describe('GET /teams/:id - Error when team is not found', () => {
-  let res: Response;
-
-  afterEach(() => {
-    sinon.restore()
-  })
-
-  beforeEach(async () => {
-    sinon.stub(Teams, 'findByPk').resolves(null)
-    res = await chai.request(app).get('/teams/999')
-  })
-
-  it('should return a message "Team not found"', async () => {
-    expect(res.body).to.be.deep.equal({ message: 'Team not found' });
-  })
-
-})
-
-

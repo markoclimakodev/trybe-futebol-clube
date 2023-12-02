@@ -1,6 +1,5 @@
-import ITeam from "../../Interfaces/ITeam";
 
-export const getTeamsMock:ITeam[] = [
+export const teams =[
   {
     "id": 1,
     "teamName": "Avaí/Kindermann"
