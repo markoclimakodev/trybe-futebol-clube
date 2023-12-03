@@ -1,63 +1,94 @@
 import * as chai from 'chai';
-import * as jwt from 'jsonwebtoken';
 import { afterEach } from 'mocha';
 import * as sinon from 'sinon';
+import { Response } from 'superagent';
 import { app } from '../app';
-import SequelizeUser from '../database/models/SequelizeUser';
-import { fieldMissing, invalidLogin, token } from './mocks/loginMock';
-import { user } from './mocks/usersMock';
+import { invalidCredentials, invalidToken, missingEmail, missingPassword, validRequest } from './mocks/usersMock';
 // @ts-ignore
 import chaiHttp = require('chai-http');
-
 chai.use(chaiHttp);
 const { expect } = chai;
 
-describe('Users Test', function () {
-  it('should login successfully', async function () {
-    sinon.stub(SequelizeUser, 'findOne').resolves(user as any)
-    sinon.stub(jwt, 'sign').resolves(token)
+describe('Users Test', () => {
+  let res: Response;
+  let userToken: string;
 
-    const res = await chai.request(app).post('/login').send({
-      email: 'admin@admin.com',
-      password: 'secret_admin'
+  describe('POST "/login"', () => {
+    describe('Successful Login', () => {
+      it('should login successfuly', async () => {
+        res = await chai.request(app).post('/login').send(validRequest)
+        const { token } = res.body;
+        userToken = token
+
+        expect(res.status).to.be.deep.equal(200)
+        expect(token).to.be.string;
+      })
+
+
     })
 
-    expect(res.status).to.be.deep.equal(200)
-    expect(res.body).to.be.deep.equal({ token })
-  })
+    describe('Login Errors', () => {
+      it('should not login if email is missing', async () => {
+        res = await chai.request(app).post('/login').send(missingEmail)
+        const { message } = res.body;
 
-  it('should not login if password missing ', async function () {
-    const res = await chai.request(app).post('/login').send({
-      email: 'admin@admin.com',
+        expect(res.status).to.be.equal(400)
+        expect(message).to.be.deep.equal('All fields must be filled')
+      })
+
+      it('should not login if password is missing', async () => {
+        res = await chai.request(app).post('/login').send(missingPassword)
+        const { message } = res.body;
+
+        expect(res.status).to.be.equal(400)
+        expect(message).to.be.deep.equal('All fields must be filled')
+      })
+
+      it('should not login with wrong email or password', async () => {
+        res = await chai.request(app).post('/login').send(invalidCredentials)
+        const { message } = res.body;
+
+        expect(res.status).to.be.equal(401)
+        expect(message).to.be.deep.equal('Invalid email or password')
+      })
     })
 
-    expect(res.status).to.be.deep.equal(400)
-    expect(res.body).to.be.deep.equal(fieldMissing)
+
   })
 
-  it('should not login if email missing ', async function () {
-    const res = await chai.request(app).post('/login').send({
-      password: 'secret_admin'
+  describe('GET "/login/role"', () => {
+    describe('Role Errors', () => {
+
+      it('should return a role with valid token', async () => {
+        res = await chai
+          .request(app)
+          .get('/login/role')
+          .set('authorization', `Bearer ${userToken}`);
+
+        expect(res.status).to.be.equal(200);
+        expect(res.body).to.be.deep.equal({ role: 'admin' });
+      });
+
+      it('should not return a role if token is invalid', async () => {
+        res = await chai.request(app).get('/login/role').set('authorization', invalidToken)
+        const { message } = res.body
+
+        expect(res.status).to.be.equal(401)
+        expect(message).to.be.equal('Token must be a valid token')
+
+      })
+
+      it('should not return a role if token missing', async () => {
+        res = await chai.request(app).get('/login/role')
+        const { message } = res.body
+
+        expect(res.status).to.be.equal(401)
+        expect(message).to.be.deep.equal('Token not found')
+
+      })
+
     })
-
-    expect(res.status).to.be.deep.equal(400)
-    expect(res.body).to.be.deep.equal(fieldMissing)
   })
-
-  it('should not login with wrong credentials ', async function () {
-
-    const res = await chai.request(app).post('/login').send({
-      email: 'admin@admin.com',
-      password: 'wrongpassword'
-    })
-
-    expect(res.status).to.be.deep.equal(401)
-    expect(res.body).to.be.deep.equal(invalidLogin)
-  })
-
-
-  afterEach(sinon.restore);
 
 })
-
 
