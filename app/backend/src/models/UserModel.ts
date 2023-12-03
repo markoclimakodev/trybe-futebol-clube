@@ -9,13 +9,10 @@ export default class UserModel implements IUserModel {
   private model = SequelizeUser;
 
   async login(login: ILogin): Promise<string | null> {
-    const { email, password } = login;
-    const user = await this.model.findOne({ where: { email } });
+    const user = await this.model.findOne({ where: { email: login.email } });
 
-    if (user && bcrypt.compareSync(password, user.password)) {
-      return tokenGenerate({
-        email, password,
-      });
+    if (user && bcrypt.compareSync(login.password, user.password)) {
+      return tokenGenerate({ id: user.id });
     }
 
     return null;

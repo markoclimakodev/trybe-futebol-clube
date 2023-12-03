@@ -23,7 +23,7 @@ describe('Users Test', function () {
     })
 
     expect(res.status).to.be.deep.equal(200)
-    expect(res.body).to.be.deep.equal({token})
+    expect(res.body).to.be.deep.equal({ token })
   })
 
   it('should not login if password missing ', async function () {
@@ -45,7 +45,7 @@ describe('Users Test', function () {
   })
 
   it('should not login with wrong credentials ', async function () {
-  
+
     const res = await chai.request(app).post('/login').send({
       email: 'admin@admin.com',
       password: 'wrongpassword'
@@ -55,6 +55,9 @@ describe('Users Test', function () {
     expect(res.body).to.be.deep.equal(invalidLogin)
   })
 
+
   afterEach(sinon.restore);
 
 })
+
+
