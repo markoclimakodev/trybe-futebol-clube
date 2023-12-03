@@ -20,10 +20,6 @@ export default class UserController {
     const login = req.body;
     const role = await this.userSerive.findRole(login);
 
-    if (!role) {
-      throw new UnauthorizedError('Invalid email or password');
-    }
-
     res.status(200).json(role);
   }
 }
