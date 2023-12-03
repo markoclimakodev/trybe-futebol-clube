@@ -14,7 +14,7 @@ router.post(
 router.get(
   '/role',
   Auth.validate,
-  (req:Request, res:Response) => userController.findRole(req, res),
+  (req:Request, res:Response) => UserController.findRole(req, res),
 );
 
 export default router;
