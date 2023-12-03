@@ -1,15 +1,19 @@
 import { Request, Response, Router } from 'express';
 import UserController from '../controllers/UserController';
-import validateLogin from '../middlewares/loginMiddleware';
-import auth from '../middlewares/authMiddleware';
+import Auth from '../middlewares/Auth';
+import Login from '../middlewares/Login';
 
 const userController = new UserController();
 const router = Router();
 
-router.post('/', validateLogin, (req:Request, res:Response) => userController.login(req, res));
 router.post(
+  '/',
+  Login.validate,
+  (req:Request, res:Response) => userController.login(req, res),
+);
+router.get(
   '/role',
-  auth,
+  Auth.validate,
   (req:Request, res:Response) => userController.findRole(req, res),
 );
 
