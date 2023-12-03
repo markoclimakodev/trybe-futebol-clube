@@ -8,15 +8,15 @@ const loginSchema = joi.object({
 
 export function loginFieldsValiation(login:ILogin) {
   if (!login.email) {
-    return 'All fields must be filled';
+    return true;
   }
 
   if (!login.password) {
-    return 'All fields must be filled';
+    return true;
   }
 }
 
 export function loginValuesValidation(login:ILogin) {
   const { error } = loginSchema.validate(login);
-  if (error) return 'Invalid email or password';
+  if (error) return true;
 }
