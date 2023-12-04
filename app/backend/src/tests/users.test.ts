@@ -1,6 +1,4 @@
 import * as chai from 'chai';
-import { afterEach } from 'mocha';
-import * as sinon from 'sinon';
 import { Response } from 'superagent';
 import { app } from '../app';
 import { invalidCredentials, invalidToken, missingEmail, missingPassword, validRequest } from './mocks/usersMock';
