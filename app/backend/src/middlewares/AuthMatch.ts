@@ -5,7 +5,7 @@ import UnauthorizedError from '../helpers/ApiError/UnauthorizedError';
 const TOKEN_NOT_FOUND = 'Token not found';
 const INVALID_TOKEN = 'Token must be a valid token';
 
-export default class Auth {
+export default class AuthMatch {
   static async validate(req: Request, _res: Response, next: NextFunction) {
     const { authorization } = req.headers;
 
@@ -15,17 +15,11 @@ export default class Auth {
 
     if (bearer !== 'Bearer' || !token) throw new UnauthorizedError(INVALID_TOKEN);
 
-    if (req.method === 'PATCH') {
-      next();
-      return;
-    }
-
     try {
       const user = jwt.verify(token, process.env.JWT_SECRET ?? 'jwt_secret');
 
       if (!user) throw new UnauthorizedError(INVALID_TOKEN);
 
-      req.body = user;
       next();
     } catch (error) {
       throw new UnauthorizedError(INVALID_TOKEN);
