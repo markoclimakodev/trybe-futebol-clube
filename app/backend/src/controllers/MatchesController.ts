@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import IMatches from '../Interfaces/Matches/IMatches';
 import MatchesService from '../services/MatchesService';
 
 export default class MatchesController {
@@ -13,8 +14,20 @@ export default class MatchesController {
 
   public async finishMatch(req:Request, res:Response) {
     const { id } = req.params;
-    console.log(id);
     await this.matchesService.finishMatch(Number(id));
     res.status(200).json({ message: 'Finished' });
+  }
+
+  public async updateMatch(req: Request, res: Response) {
+    const { id } = req.params;
+    const match: IMatches = req.body;
+    await this.matchesService.updateMatch(Number(id), match);
+    res.status(200).json({ message: 'Match updated' });
+  }
+
+  public async createMatch(req: Request, res: Response) {
+    const newMatch = req.body;
+    const createdMatch = await this.matchesService.createMatch(newMatch);
+    res.status(201).json(createdMatch);
   }
 }
