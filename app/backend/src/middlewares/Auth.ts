@@ -15,17 +15,13 @@ export default class Auth {
 
     if (bearer !== 'Bearer' || !token) throw new UnauthorizedError(INVALID_TOKEN);
 
-    if (req.method === 'PATCH') {
-      next();
-      return;
-    }
-
     try {
       const user = jwt.verify(token, process.env.JWT_SECRET ?? 'jwt_secret');
 
       if (!user) throw new UnauthorizedError(INVALID_TOKEN);
-
-      req.body = user;
+      if (req.method === 'GET') {
+        req.body = user;
+      }
       next();
     } catch (error) {
       throw new UnauthorizedError(INVALID_TOKEN);
