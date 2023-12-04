@@ -32,4 +32,11 @@ export default class MatchesModel implements IMatchesModel {
 
     return filteredMatches;
   }
+
+  async finishMatch(id:number):Promise<[number]> {
+    const matche = await this.model.update({ inProgress: false }, { where: { id } });
+    return matche;
+  }
 }
+
+/** https://cursos.alura.com.br/forum/topico-error-ts2322-type-affectedcount-number-is-not-assignable-to-type-number-produto-source-has-1-element-s-but-target-requires-2-223505  */
