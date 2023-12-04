@@ -21,9 +21,8 @@ export default class MatchesService {
     return allMatches;
   }
 
-  public async finishMatch(id:number) {
-    const updatedMatch = await this.matchesModel.finishMatch(id);
-    return updatedMatch;
+  public async finishMatch(id:number):Promise<void> {
+    await this.matchesModel.finishMatch(id);
   }
 
   public async updateMatch(id: number, match: IMatches): Promise<void> {

@@ -38,14 +38,12 @@ export default class MatchesModel implements IMatchesModel {
     return inProgressMatches;
   }
 
-  async finishMatch(id: number): Promise<[number]> {
-    const updatedMatch = await this.model.update({ inProgress: false }, { where: { id } });
-    return updatedMatch;
+  async finishMatch(id: number): Promise<void> {
+    await this.model.update({ inProgress: false }, { where: { id } });
   }
 
-  async updateMatch(id: number, match: IMatches): Promise<[number]> {
+  async updateMatch(id: number, match: IMatches): Promise<void> {
     await this.model.update(match, { where: { id } });
-    return [id];
   }
 
   async verifyTeamsExist(homeTeamId: number, awayTeamId: number): Promise<boolean> {
