@@ -1,10 +1,15 @@
+import IMatchCreate from '../Interfaces/Matches/IMatchCreate';
 import IMatches from '../Interfaces/Matches/IMatches';
 import IMatchesModel from '../Interfaces/Matches/IMatchesModel';
 import SequelizeMatches from '../database/models/SequelizeMatches';
 import SequelizeTeam from '../database/models/SequelizeTeam';
+import NotFoundError from '../helpers/ApiError/NotFoundError';
+import TeamModel from './TeamModel';
 
 export default class MatchesModel implements IMatchesModel {
   private model = SequelizeMatches;
+  private teamsModel = new TeamModel();
+
   teamModel = [
     {
       model: SequelizeTeam,
@@ -24,19 +29,40 @@ export default class MatchesModel implements IMatchesModel {
     return matches;
   }
 
-  async getMatchesByProgress(progress:boolean):Promise<IMatches[]> {
-    const filteredMatches = await this.model.findAll({
+  async getMatchesByProgress(progress: boolean): Promise<IMatches[]> {
+    const inProgressMatches = await this.model.findAll({
       where: { inProgress: progress },
       include: this.teamModel,
     });
 
-    return filteredMatches;
+    return inProgressMatches;
   }
 
-  async finishMatch(id:number):Promise<[number]> {
-    const matche = await this.model.update({ inProgress: false }, { where: { id } });
-    return matche;
+  async finishMatch(id: number): Promise<[number]> {
+    const updatedMatch = await this.model.update({ inProgress: false }, { where: { id } });
+    return updatedMatch;
+  }
+
+  async updateMatch(id: number, match: IMatches): Promise<[number]> {
+    await this.model.update(match, { where: { id } });
+    return [id];
+  }
+
+  async verifyTeamsExist(homeTeamId: number, awayTeamId: number): Promise<boolean> {
+    const homeTeamData = await this.teamsModel.findById(homeTeamId);
+    const awayTeamData = await this.teamsModel.findById(awayTeamId);
+
+    if (!homeTeamData || !awayTeamData) {
+      throw new NotFoundError('There is no team with such id!');
+    }
+
+    return true;
+  }
+
+  async createMatch(newMatch: IMatchCreate): Promise<IMatches> {
+    const { homeTeamId, awayTeamId } = newMatch;
+    await this.verifyTeamsExist(homeTeamId, awayTeamId);
+    const matchData = await this.model.create({ ...newMatch, inProgress: true });
+    return matchData;
   }
 }
-
-/** https://cursos.alura.com.br/forum/topico-error-ts2322-type-affectedcount-number-is-not-assignable-to-type-number-produto-source-has-1-element-s-but-target-requires-2-223505  */
