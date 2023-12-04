@@ -5,9 +5,9 @@ class SequelizeMatches extends Model<InferAttributes<SequelizeMatches>,
 InferCreationAttributes<SequelizeMatches>> {
   declare id: number;
   declare homeTeamId: number;
-  declare homeTeamGoals: string;
-  declare awayTeamId: string;
-  declare awayTeamGoals: string;
+  declare homeTeamGoals: number;
+  declare awayTeamId: number;
+  declare awayTeamGoals: number;
   declare inProgress: boolean;
 }
 
