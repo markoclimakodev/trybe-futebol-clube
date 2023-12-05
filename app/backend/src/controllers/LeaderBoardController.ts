@@ -8,4 +8,9 @@ export default class LeaderBoardController {
     const generatedLeaderBoard = await this.leaderBoardService.generateHomeLeaderBoard();
     res.status(200).json(generatedLeaderBoard);
   }
+
+  public async generateAwayLeaderBoard(_req:Request, res:Response) {
+    const generatedLeaderBoard = await this.leaderBoardService.generateAwayLeaderBoard();
+    res.status(200).json(generatedLeaderBoard);
+  }
 }

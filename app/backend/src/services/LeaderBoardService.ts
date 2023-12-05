@@ -11,4 +11,9 @@ export default class LeaderBoardService {
     const generatedLeaderBoard = await this.leaderBoardModel.generateHomeLeaderBoard();
     return generatedLeaderBoard;
   }
+
+  public async generateAwayLeaderBoard():Promise<TeamStats[]> {
+    const generatedLeaderBoard = await this.leaderBoardModel.generateAwayLeaderBoard();
+    return generatedLeaderBoard;
+  }
 }

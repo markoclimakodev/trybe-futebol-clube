@@ -31,4 +31,18 @@ export default class LeaderBoardModel implements ILeaderBoard {
     const sortLeaderBoard = SortLeaderBoard.sort(homeLeaderBoard);
     return sortLeaderBoard;
   }
+
+  async generateAwayLeaderBoard(): Promise<TeamStats[]> {
+    const { teams, matches } = await this.getAllFinishedTeamsAndMatches();
+    const awayLeaderBoard = teams.map((team) => {
+      const awayMatches = matches.filter((match) => match.awayTeamId === team.id);
+      return {
+        name: team.teamName,
+        ...LeaderBoard.generate(awayMatches, team.id),
+      };
+    });
+
+    const sortLeaderBoard = SortLeaderBoard.sort(awayLeaderBoard);
+    return sortLeaderBoard;
+  }
 }
