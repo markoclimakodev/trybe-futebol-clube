@@ -18,6 +18,19 @@ export default class LeaderBoardModel implements ILeaderBoard {
     return { teams, matches };
   }
 
+  async generateLeaderBoard(): Promise<TeamStats[]> {
+    const { teams, matches } = await this.getAllFinishedTeamsAndMatches();
+
+    const leaderboard = teams.map((team) => ({
+      name: team.teamName,
+      ...LeaderBoard.generate(matches, team.id),
+    }));
+
+    const sortedLeaderboard = SortLeaderBoard.sort(leaderboard);
+
+    return sortedLeaderboard;
+  }
+
   async generateHomeLeaderBoard(): Promise<TeamStats[]> {
     const { teams, matches } = await this.getAllFinishedTeamsAndMatches();
     const homeLeaderBoard = teams.map((team) => {

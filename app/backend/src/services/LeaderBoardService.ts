@@ -7,6 +7,11 @@ export default class LeaderBoardService {
     private leaderBoardModel: ILeaderBoard = new LeaderBoardModel(),
   ) {}
 
+  public async generateLeaderBoard():Promise<TeamStats[]> {
+    const generatedLeaderBoard = await this.leaderBoardModel.generateLeaderBoard();
+    return generatedLeaderBoard;
+  }
+
   public async generateHomeLeaderBoard():Promise<TeamStats[]> {
     const generatedLeaderBoard = await this.leaderBoardModel.generateHomeLeaderBoard();
     return generatedLeaderBoard;
